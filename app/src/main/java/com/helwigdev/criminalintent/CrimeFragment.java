@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -28,7 +29,11 @@ public class CrimeFragment extends Fragment {
 
 	public static final String EXTRA_CRIME_ID = "com.helwigdev.criminalintent.crime_id";
 	private static final String DIALOG_DATE = "date";
+	private static final String DIALOG_TIME = "time";
+	private static final String DIALOG_PICKER = "picker";
 	private static final int REQUEST_DATE = 5;
+	private static final int REQUEST_TIME = 6;
+	private static final int REQUEST_PICKER = 7;
 
 	private Crime mCrime;
     private EditText mTitleField;
@@ -82,9 +87,9 @@ public class CrimeFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				FragmentManager fm = getActivity().getSupportFragmentManager();
-				DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
-				dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
-				dialog.show(fm, DIALOG_DATE);
+				SuperMassiveChallengePickerDateTimePickerFragment dialog = new SuperMassiveChallengePickerDateTimePickerFragment();
+				dialog.setTargetFragment(CrimeFragment.this, REQUEST_PICKER);
+				dialog.show(fm, DIALOG_PICKER);
 			}
 		});
 
@@ -118,8 +123,26 @@ public class CrimeFragment extends Fragment {
 			mCrime.setDate(date);
 			updateDate();
 			Toast.makeText(getActivity(),"everything happened as it should",Toast.LENGTH_SHORT).show();
-		} else {
-			Toast.makeText(getActivity(),"result fail",Toast.LENGTH_SHORT).show();
+		} else if(requestCode == REQUEST_TIME){
+			Date date = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+			mCrime.setDate(date);
+			updateDate();
+		} else if (requestCode == REQUEST_PICKER){
+			//launch date or time depending on data
+			int code = (int)data.getSerializableExtra(SuperMassiveChallengePickerDateTimePickerFragment.EXTRA_CODE);
+			if(code == SuperMassiveChallengePickerDateTimePickerFragment.EXTRA_CODE_DATE){
+				//launch date picker
+				FragmentManager fm = getActivity().getSupportFragmentManager();
+				DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+				dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+				dialog.show(fm, DIALOG_DATE);
+			} else {
+				//launch time picker
+				FragmentManager fm = getActivity().getSupportFragmentManager();
+				TimePickerFragment dialog = TimePickerFragment.newInstance(mCrime.getDate());
+				dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
+				dialog.show(fm, DIALOG_TIME);
+			}
 		}
 	}
 }
