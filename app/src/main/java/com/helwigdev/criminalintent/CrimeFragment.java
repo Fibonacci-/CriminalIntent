@@ -1,14 +1,18 @@
 package com.helwigdev.criminalintent;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -45,7 +49,21 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 		UUID crimeId = (UUID)getArguments().getSerializable(EXTRA_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+		setHasOptionsMenu(true);
     }
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()){
+			case android.R.id.home:
+				if(NavUtils.getParentActivityName(getActivity()) != null){
+					NavUtils.navigateUpFromSameTask(getActivity());
+				}
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
 
 	public static CrimeFragment newInstance(UUID crimeId){
 		Bundle args = new Bundle();
@@ -55,13 +73,19 @@ public class CrimeFragment extends Fragment {
 		fragment.setArguments(args);
 		return fragment;
 	}
-
+	@TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
         mTitleField = (EditText) v.findViewById(R.id.crime_title);
 		mDateButton = (Button) v.findViewById(R.id.b_crime_date);
 		mSolvedCheckBox = (CheckBox) v.findViewById(R.id.ck_crime_solved);
+
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+			if(NavUtils.getParentActivityName(getActivity()) != null && getActivity().getActionBar() != null) {
+				getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+			}
+		}
 
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
