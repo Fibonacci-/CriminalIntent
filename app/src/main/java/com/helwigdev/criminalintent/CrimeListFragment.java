@@ -12,20 +12,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.support.v7.app.ActionBar;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 
-/**
- * Created by Tyler on 1/15/2015.
- */
+
 public class CrimeListFragment extends ListFragment {
 	private ArrayList<Crime> mCrimes;
 	private boolean mSubtitleVisible;
@@ -33,6 +29,7 @@ public class CrimeListFragment extends ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		getActivity().setTitle(R.string.crimes_title);
 		mCrimes = CrimeLab.get(getActivity()).getCrimes();
 
@@ -46,13 +43,24 @@ public class CrimeListFragment extends ListFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = super.onCreateView(inflater, container, savedInstanceState);
+		View v = inflater.inflate(R.layout.list_view_crime_fragment, null);//CHALLENGE CHAPTER 16
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
 			if(mSubtitleVisible){
 				((ActionBarActivity)getActivity()).getSupportActionBar().setSubtitle(R.string.subtitle);
 			}
 		}
+		Button bAddCrime = (Button) v.findViewById(R.id.b_empty_view_add_crime);
+		bAddCrime.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Crime crime = new Crime();
+				CrimeLab.get(getActivity()).addCrime(crime);
+				Intent i = new Intent(getActivity(), CrimePagerActivity.class);
+				i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
+				startActivityForResult(i, 0);
+			}
+		});
 		return v;
 	}
 
