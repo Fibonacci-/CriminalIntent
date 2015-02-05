@@ -43,7 +43,7 @@ public class CrimeListFragment extends ListFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.list_view_crime_fragment, null);//CHALLENGE CHAPTER 16
+		View v = inflater.inflate(R.layout.list_view_crime_fragment, container, false);//CHALLENGE CHAPTER 16
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
 			if(mSubtitleVisible){
