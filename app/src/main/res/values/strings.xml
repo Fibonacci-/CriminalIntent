@@ -19,5 +19,6 @@
     <string name="delete">Delete</string>
     <string name="empty_view">No crimes here! Better go sleuthing.</string>
     <string name="go_sleuthing">Go sleuthing</string>
+    <string name="take">Take!</string>
 
 </resources>

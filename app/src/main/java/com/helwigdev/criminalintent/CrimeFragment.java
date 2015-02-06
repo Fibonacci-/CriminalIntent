@@ -3,6 +3,8 @@ package com.helwigdev.criminalintent;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,6 +24,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.text.DateFormat;
@@ -45,6 +48,7 @@ public class CrimeFragment extends Fragment {
     private EditText mTitleField;
 	private Button mDateButton;
 	private CheckBox mSolvedCheckBox;
+	private ImageButton mPhotoButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,6 +142,24 @@ public class CrimeFragment extends Fragment {
 				mCrime.setSolved(isChecked);
 			}
 		});
+
+		mPhotoButton = (ImageButton)v.findViewById(R.id.ib_crime);
+		mPhotoButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getActivity(), CrimeCameraActivity.class);
+				startActivity(i);
+			}
+		});
+
+		//disable if no camera
+		PackageManager pm = getActivity().getPackageManager();
+		boolean hasCamera = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
+				(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+						Camera.getNumberOfCameras() > 0);
+		if(!hasCamera){
+			mPhotoButton.setEnabled(false);
+		}
 
         return v;
     }
