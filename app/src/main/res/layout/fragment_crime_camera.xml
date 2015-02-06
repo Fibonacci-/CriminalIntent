@@ -21,6 +21,20 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
 
-        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_crime_camera_progress"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            style="@android:style/Widget.ProgressBar.Large"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
 
 </FrameLayout>

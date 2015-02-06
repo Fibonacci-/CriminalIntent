@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -19,19 +19,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/iv_crime"
+                android:scaleType="centerInside"
+                android:background="@android:color/darker_gray"
+                android:cropToPadding="true"
+                android:layout_width="80dp"
+                android:layout_height="80dp"/>
+
             <ImageButton
                 android:id="@+id/ib_crime"
                 android:src="@android:drawable/ic_menu_camera"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,13 +52,12 @@
                 android:id="@+id/crime_title"
                 android:hint="@string/crime_title_hint"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
+
+    </LinearLayout>
 
 
     <TextView
@@ -70,14 +78,14 @@
             android:id="@+id/b_crime_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <CheckBox
             android:id="@+id/ck_crime_solved"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/crime_solved_label"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
     </LinearLayout>
 
 </LinearLayout>
