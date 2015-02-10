@@ -61,6 +61,7 @@ public class CrimeFragment extends Fragment {
 	private ImageButton mPhotoButton;
 	private ImageView mPhotoView;
 	private Button mSuspectButton;
+	private Button mCallSuspectButton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -231,6 +232,21 @@ public class CrimeFragment extends Fragment {
 			mSuspectButton.setText(mCrime.getSuspect());
 		}
 
+		mCallSuspectButton = (Button) v.findViewById(R.id.b_call_suspect);
+		mCallSuspectButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Uri number = Uri.parse("tel:" + mCrime.getSuspectPhone());
+				Intent i = new Intent(Intent.ACTION_DIAL, number);
+				startActivity(i);
+			}
+		});
+		if(mCrime.getSuspectPhone() != null){
+			mCallSuspectButton.setEnabled(true);
+		} else {
+			mCallSuspectButton.setEnabled(false);
+		}
+
 		return v;
 	}
 
@@ -334,7 +350,7 @@ public class CrimeFragment extends Fragment {
 		} else if (requestCode == REQUEST_CONTACT){
 			Uri contactUri = data.getData();
 			//specify which fields we want
-			String[] queryFields = new String[] {ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.DATA1};//should be phone number
+			String[] queryFields = new String[] {ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID};//should be phone number
 			//perform query
 			Cursor c = getActivity().getContentResolver().query(contactUri, queryFields, null,null,null);
 
@@ -346,6 +362,32 @@ public class CrimeFragment extends Fragment {
 			//pull first column - this will be the name
 			c.moveToFirst();
 			String suspect = c.getString(0);
+			String contactId = c.getString(1);
+			String phoneNumber = null;
+			Cursor phones = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+					ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
+			while (phones.moveToNext()) {
+				String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+				int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+				switch (type) {
+					case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+						phoneNumber = number;
+						break;
+					case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+						phoneNumber = number;
+						break;
+					case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+						phoneNumber = number;
+						break;
+				}
+			}
+			phones.close();
+
+			if(phoneNumber != null) {
+				mCrime.setSuspectPhone(phoneNumber);
+				Log.d(TAG, phoneNumber +" added");//CHALLENGE 21
+				mCallSuspectButton.setEnabled(true);
+			}
 			mCrime.setSuspect(suspect);
 			mSuspectButton.setText(suspect);
 			c.close();
