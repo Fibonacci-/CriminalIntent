@@ -30,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -45,10 +46,12 @@ public class CrimeFragment extends Fragment {
 	private static final String DIALOG_TIME = "time";
 	private static final String DIALOG_PICKER = "picker";
 	private static final String DIALOG_IMAGE = "image";
+	private static final String DIALOG_DELETE = "delete_photo";
 	private static final int REQUEST_DATE = 5;
 	private static final int REQUEST_TIME = 6;
 	private static final int REQUEST_PICKER = 7;
 	private static final int REQUEST_PHOTO = 8;
+	private static final int REQUEST_DELETE = 9;
 
 	private Crime mCrime;
 	private EditText mTitleField;
@@ -174,6 +177,22 @@ public class CrimeFragment extends Fragment {
 				ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
 			}
 		});
+		mPhotoView.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				if(mCrime.getPhoto() == null){
+					return false;
+				} else {
+					FragmentManager fm = getActivity().getSupportFragmentManager();
+					String filename = mCrime.getPhoto().getFilename();
+					DeleteFragment df = DeleteFragment.newInstance(filename);
+					df.setTargetFragment(CrimeFragment.this, REQUEST_DELETE);
+					df.show(fm, DIALOG_DELETE);
+
+					return true;
+				}
+			}
+		});
 
 		//disable if no camera
 		PackageManager pm = getActivity().getPackageManager();
@@ -183,6 +202,8 @@ public class CrimeFragment extends Fragment {
 		if (!hasCamera) {
 			mPhotoButton.setEnabled(false);
 		}
+
+
 
 		return v;
 	}
@@ -245,9 +266,21 @@ public class CrimeFragment extends Fragment {
 			String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
 			if (filename != null) {
 				Photo p = new Photo(filename);
+				if(mCrime.getPhoto() != null){
+					String file = mCrime.getPhoto().getFilename();
+					File f = getActivity().getFileStreamPath(file);
+					if(f.delete()) {
+						Log.d(TAG, "Deleted previous photo " + file);
+					} else {
+						Log.e(TAG, "Failed to delete photo");
+					}
+				}
 				mCrime.setPhoto(p);
 				showPhoto();
 			}
+		} else if (requestCode == REQUEST_DELETE){
+			mPhotoView.setImageDrawable(null);
+			mCrime.setPhoto(null);//CHALLENGE 20
 		}
 	}
 

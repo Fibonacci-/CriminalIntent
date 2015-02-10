@@ -1,8 +1,13 @@
 package com.helwigdev.criminalintent;
 
+import android.annotation.TargetApi;
+import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.OrientationEventListener;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -11,7 +16,7 @@ import android.view.WindowManager;
  */
 public class CrimeCameraActivity extends SingleFragmentActivity {
 
-
+	OrientationEventListener mOrientationEventListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +27,8 @@ public class CrimeCameraActivity extends SingleFragmentActivity {
 
 		super.onCreate(savedInstanceState);
 		getSupportActionBar().hide();
+
+
 	}
 
 	@Override

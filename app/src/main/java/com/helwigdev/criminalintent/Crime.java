@@ -22,7 +22,7 @@ public class Crime {
 	private static final String JSON_DATE = "date";
 	private static final String JSON_PHOTO = "photo";
 
-	private Photo mPhoto;
+	private Photo mPhoto = null;
 
 	public Crime() {
 		mId = UUID.randomUUID();

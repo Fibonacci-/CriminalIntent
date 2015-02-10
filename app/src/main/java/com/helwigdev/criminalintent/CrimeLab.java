@@ -3,6 +3,7 @@ package com.helwigdev.criminalintent;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -66,6 +67,15 @@ public class CrimeLab {
 	}
 
 	public void deleteCrime(Crime c){
+		if(c.getPhoto() != null){
+			String file = c.getPhoto().getFilename();
+			File f = mAppContext.getApplicationContext().getFileStreamPath(file);
+			if(f.delete()) {
+				Log.d(TAG, "Deleted crime photo " + file);
+			} else {
+				Log.e(TAG, "Failed to delete photo");
+			}
+		}
 		mCrimes.remove(c);
 	}
 }

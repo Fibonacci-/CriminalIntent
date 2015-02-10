@@ -25,4 +25,6 @@ public class Photo {
 	public String getFilename(){
 		return mFilename;
 	}
+
+
 }
