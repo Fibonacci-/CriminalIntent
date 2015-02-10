@@ -19,7 +19,7 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_fragment);
+		setContentView(getLayoutResId());
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
@@ -27,5 +27,9 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
 			fragment = createFragment();
 			fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
 		}
+	}
+
+	protected int getLayoutResId() {
+		return R.layout.activity_fragment;
 	}
 }
