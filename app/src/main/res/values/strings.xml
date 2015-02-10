@@ -21,5 +21,18 @@
     <string name="empty_view">No crimes here! Better go sleuthing.</string>
     <string name="go_sleuthing">Go sleuthing</string>
     <string name="take">Take!</string>
+    <string name="crime_suspect_text">Choose suspect</string>
+    <string name="crime_report_text">Send Crime Report</string>
+    <string name="image">Image</string>
+    <string name="crime_report">%1$s!
+        The crime was discovered on %2$s. %3$s, and %4$s
+    </string>
+    <string name="crime_report_solved">The case is solved</string>
+    <string name="crime_report_unsolved">The case is not solved</string>
+    <string name="crime_report_no_suspect">there is no suspect.</string>
+    <string name="crime_report_suspect">the suspect is %s.</string>
+    <string name="crime_report_subject">CriminalIntent Crime Report</string>
+    <string name="send_report">Send crime report via</string>
+    <string name="call_suspect">Call suspect</string>
 
 </resources>

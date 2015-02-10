@@ -4,10 +4,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -35,9 +37,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-/**
- * Created by Tyler on 1/14/2015.
- */
+
 public class CrimeFragment extends Fragment {
 
 	public static final String TAG = "CrimeFragment";
@@ -52,6 +52,7 @@ public class CrimeFragment extends Fragment {
 	private static final int REQUEST_PICKER = 7;
 	private static final int REQUEST_PHOTO = 8;
 	private static final int REQUEST_DELETE = 9;
+	private static final int REQUEST_CONTACT = 10;
 
 	private Crime mCrime;
 	private EditText mTitleField;
@@ -59,6 +60,7 @@ public class CrimeFragment extends Fragment {
 	private CheckBox mSolvedCheckBox;
 	private ImageButton mPhotoButton;
 	private ImageView mPhotoView;
+	private Button mSuspectButton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -203,9 +205,57 @@ public class CrimeFragment extends Fragment {
 			mPhotoButton.setEnabled(false);
 		}
 
+		Button reportButton = (Button) v.findViewById(R.id.b_crime_report);
+		reportButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(Intent.ACTION_SEND);
+				i.setType("text/plain");
+				i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+				i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+				i = Intent.createChooser(i, getString(R.string.send_report));
+				startActivity(i);
+			}
+		});
 
+		mSuspectButton = (Button)v.findViewById(R.id.b_crime_suspect);
+		mSuspectButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+				startActivityForResult(i, REQUEST_CONTACT);
+			}
+		});
+
+		if(mCrime.getSuspect() != null){
+			mSuspectButton.setText(mCrime.getSuspect());
+		}
 
 		return v;
+	}
+
+	private String getCrimeReport(){
+		String solvedString = null;
+		if(mCrime.isSolved()){
+			solvedString = getString(R.string.crime_report_solved);
+		} else {
+			solvedString = getString(R.string.crime_report_unsolved);
+		}
+
+		String dateFormat = "EEE, MMM dd";
+		String dateString = android.text.format.DateFormat.format(dateFormat, mCrime.getDate()).toString();//NOT the java.text method
+
+		String suspect = mCrime.getSuspect();
+
+		if(suspect == null){
+			suspect = getString(R.string.crime_report_no_suspect);
+		} else {
+			suspect = getString(R.string.crime_report_suspect, suspect);
+		}
+
+		String report = getString(R.string.crime_report, mCrime.getTitle(), dateString, solvedString, suspect);
+
+		return report;
 	}
 
 	private void showPhoto(){
@@ -281,6 +331,24 @@ public class CrimeFragment extends Fragment {
 		} else if (requestCode == REQUEST_DELETE){
 			mPhotoView.setImageDrawable(null);
 			mCrime.setPhoto(null);//CHALLENGE 20
+		} else if (requestCode == REQUEST_CONTACT){
+			Uri contactUri = data.getData();
+			//specify which fields we want
+			String[] queryFields = new String[] {ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.DATA1};//should be phone number
+			//perform query
+			Cursor c = getActivity().getContentResolver().query(contactUri, queryFields, null,null,null);
+
+			if(c.getCount() == 0){
+				c.close();
+				return;
+			}
+
+			//pull first column - this will be the name
+			c.moveToFirst();
+			String suspect = c.getString(0);
+			mCrime.setSuspect(suspect);
+			mSuspectButton.setText(suspect);
+			c.close();
 		}
 	}
 
