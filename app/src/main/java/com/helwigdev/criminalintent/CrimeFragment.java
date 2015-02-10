@@ -62,6 +62,24 @@ public class CrimeFragment extends Fragment {
 	private ImageView mPhotoView;
 	private Button mSuspectButton;
 	private Button mCallSuspectButton;
+	private Callbacks mCallbacks;
+
+	public interface Callbacks {
+		void onCrimeUpdated(Crime crime);
+	}
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		mCallbacks = (Callbacks)activity;
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mCallbacks = null;
+	}
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -127,6 +145,8 @@ public class CrimeFragment extends Fragment {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				mCrime.setTitle(s.toString());
+				mCallbacks.onCrimeUpdated(mCrime);
+				getActivity().setTitle(mCrime.getTitle());
 			}
 
 			@Override
@@ -136,6 +156,9 @@ public class CrimeFragment extends Fragment {
 		});
 
 		mTitleField.setText(mCrime.getTitle());
+
+
+
 
 		updateDate();
 		mDateButton.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +177,7 @@ public class CrimeFragment extends Fragment {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				mCrime.setSolved(isChecked);
+				mCallbacks.onCrimeUpdated(mCrime);
 			}
 		});
 
@@ -297,9 +321,7 @@ public class CrimeFragment extends Fragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Toast.makeText(getActivity(), "got callback: requestCode = " + requestCode + " resultCode = " + resultCode, Toast.LENGTH_SHORT).show();
 		if (resultCode != Activity.RESULT_OK) {
-			Toast.makeText(getActivity(), "request fail", Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -307,11 +329,12 @@ public class CrimeFragment extends Fragment {
 			Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
 			mCrime.setDate(date);
 			updateDate();
-			Toast.makeText(getActivity(), "everything happened as it should", Toast.LENGTH_SHORT).show();
+			mCallbacks.onCrimeUpdated(mCrime);
 		} else if (requestCode == REQUEST_TIME) {
 			Date date = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
 			mCrime.setDate(date);
 			updateDate();
+			mCallbacks.onCrimeUpdated(mCrime);
 		} else if (requestCode == REQUEST_PICKER) {
 			//launch date or time depending on data
 			int code = (int) data.getSerializableExtra(SuperMassiveChallengePickerDateTimePickerFragment.EXTRA_CODE);
@@ -328,6 +351,7 @@ public class CrimeFragment extends Fragment {
 				dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
 				dialog.show(fm, DIALOG_TIME);
 			}
+			mCallbacks.onCrimeUpdated(mCrime);
 		} else if (requestCode == REQUEST_PHOTO) {
 			String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
 			if (filename != null) {
@@ -344,9 +368,11 @@ public class CrimeFragment extends Fragment {
 				mCrime.setPhoto(p);
 				showPhoto();
 			}
+			mCallbacks.onCrimeUpdated(mCrime);
 		} else if (requestCode == REQUEST_DELETE){
 			mPhotoView.setImageDrawable(null);
 			mCrime.setPhoto(null);//CHALLENGE 20
+			mCallbacks.onCrimeUpdated(mCrime);
 		} else if (requestCode == REQUEST_CONTACT){
 			Uri contactUri = data.getData();
 			//specify which fields we want
@@ -391,6 +417,7 @@ public class CrimeFragment extends Fragment {
 			mCrime.setSuspect(suspect);
 			mSuspectButton.setText(suspect);
 			c.close();
+			mCallbacks.onCrimeUpdated(mCrime);
 		}
 	}
 
